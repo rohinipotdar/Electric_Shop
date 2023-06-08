@@ -1,6 +1,7 @@
 package com.BikkadIT.ShopElectric.controller;
 
 import com.BikkadIT.ShopElectric.dtos.UserDto;
+import com.BikkadIT.ShopElectric.entities.User;
 import com.BikkadIT.ShopElectric.helper.AppConstants;
 import com.BikkadIT.ShopElectric.payloads.ApiResponse;
 import com.BikkadIT.ShopElectric.services.UserServiceI;
@@ -50,13 +51,13 @@ public class UserController {
         return new ResponseEntity<>(getUser, HttpStatus.OK);
     }
 
-    /*@GetMapping("/{email}")
+    @GetMapping("/{email}")
     public ResponseEntity<UserDto> getUserBySearchString(@PathVariable String email){
         logger.info("Request entering for search User by string ");
       UserDto newUser= this.userServiceI.getUserByEmail(email);
         logger.info("Request complete for search User by string ");
       return new ResponseEntity<>(newUser, HttpStatus.OK);
-    }*/
+    }
 
     /*
      * @author: rohini

@@ -60,12 +60,14 @@ public class UserServiceImpl implements UserServiceI {
      * @param: email
      * @return
      */
-    /*public UserDto getUserByEmail(String email)  {
+    public UserDto getUserByEmail(String email)  {
         logger.info("Initiating Dao call for get single User by email : {}",email);
-        UserDto newUser= this.userRepository.findByUserEmail(email);
+        String email1=this.mapper.map(email,User.class).getEmail();
+        Optional<User> newUser1= this.userRepository.findByEmail(email1);
+        UserDto newUser2 = this.mapper.map(newUser1,UserDto.class);
         logger.info("Complete Dao call for get single User by email : {}",email);
-        return newUser;
-    }*/
+        return newUser2;
+    }
     /*
      * @author: rohini
      * @implNote:  This method is for get all User

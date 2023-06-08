@@ -2,6 +2,7 @@ package com.BikkadIT.ShopElectric.services;
 
 
 import com.BikkadIT.ShopElectric.dtos.UserDto;
+import com.BikkadIT.ShopElectric.entities.User;
 
 import java.util.List;
 
@@ -21,6 +22,6 @@ public interface UserServiceI {
    //delete user
    void deleteUser(String userId);
 
-   //UserDto getUserByEmail(String email);
+   UserDto getUserByEmail(String email);
 
 }
