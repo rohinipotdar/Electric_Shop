@@ -20,8 +20,8 @@ public interface UserServiceI {
    UserDto updateUser(UserDto userDto,String userId);
 
    //delete user
-   void deleteUser(String userId);
+   String deleteUser(String userId);
 
-   UserDto getUserByEmail(String email);
+   UserDto getUserByEmailAndPassword(String email, String password);
 
 }

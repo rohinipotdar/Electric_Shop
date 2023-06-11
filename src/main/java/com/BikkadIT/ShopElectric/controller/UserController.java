@@ -1,7 +1,6 @@
 package com.BikkadIT.ShopElectric.controller;
 
 import com.BikkadIT.ShopElectric.dtos.UserDto;
-import com.BikkadIT.ShopElectric.entities.User;
 import com.BikkadIT.ShopElectric.helper.AppConstants;
 import com.BikkadIT.ShopElectric.payloads.ApiResponse;
 import com.BikkadIT.ShopElectric.services.UserServiceI;
@@ -51,10 +50,10 @@ public class UserController {
         return new ResponseEntity<>(getUser, HttpStatus.OK);
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<UserDto> getUserBySearchString(@PathVariable String email){
+    @GetMapping("/email/{email}/password/{password}")
+    public ResponseEntity<UserDto> getUserBySearchString(@Valid @PathVariable String email, @PathVariable String password){
         logger.info("Request entering for search User by string ");
-      UserDto newUser= this.userServiceI.getUserByEmail(email);
+      UserDto newUser= this.userServiceI.getUserByEmailAndPassword(email,password);
         logger.info("Request complete for search User by string ");
       return new ResponseEntity<>(newUser, HttpStatus.OK);
     }
@@ -91,7 +90,7 @@ public class UserController {
      * @param: userId
      */
     @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse> deleteUser(String userId){
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable String userId){
         logger.info("Request entering for Delete User with userId :{}", userId);
        this.userServiceI.deleteUser(userId);
         logger.info("Complete request for Delete User with userId :{}", userId);

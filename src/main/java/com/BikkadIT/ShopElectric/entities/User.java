@@ -2,10 +2,7 @@ package com.BikkadIT.ShopElectric.entities;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Setter
@@ -16,8 +13,9 @@ import javax.persistence.Table;
 @Builder
 public class User {
     @Id
-   // @GeneratedValue(strategy = GenerationType.IDENTITY)
+   //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private String userId;
+
     @Column(name="user_name")
     private String name;
 

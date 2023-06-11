@@ -2,6 +2,7 @@ package com.BikkadIT.ShopElectric.services.impl;
 
 import com.BikkadIT.ShopElectric.entities.User;
 import com.BikkadIT.ShopElectric.dtos.UserDto;
+import com.BikkadIT.ShopElectric.exceptions.ResourceNotFoundException;
 import com.BikkadIT.ShopElectric.helper.AppConstants;
 import com.BikkadIT.ShopElectric.repository.UserRepository;
 import com.BikkadIT.ShopElectric.services.UserServiceI;
@@ -9,10 +10,12 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +37,8 @@ public class UserServiceImpl implements UserServiceI {
     @Override
         public UserDto createUser(UserDto userDto) {
        logger.info("Initiating Dao call for create User");
+        String userId = UUID.randomUUID().toString();
+        userDto.setUserId(userId);
        User user=this.mapper.map(userDto,User.class);
        User newuser=this.userRepository.save(user);
        UserDto newUser1=this.mapper.map(newuser,UserDto.class);
@@ -50,7 +55,7 @@ public class UserServiceImpl implements UserServiceI {
     public UserDto getUserById(String userId) {
         logger.info("Initiating Dao call for get single User by userID : {}",userId);
         User user=this.mapper.map(userId,User.class);
-        User newuser=this.userRepository.findById(userId).orElseThrow(()-> new RuntimeException(AppConstants.NOT_FOUND+userId));
+        User newuser=this.userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException(AppConstants.NOT_FOUND+userId));
         logger.info("Complete Dao call for get single User by userID : {}",userId);
         return this.mapper.map(newuser,UserDto.class);
     }
@@ -60,13 +65,12 @@ public class UserServiceImpl implements UserServiceI {
      * @param: email
      * @return
      */
-    public UserDto getUserByEmail(String email)  {
+    public UserDto getUserByEmailAndPassword (String email, String password)  {
+
         logger.info("Initiating Dao call for get single User by email : {}",email);
-        String email1=this.mapper.map(email,User.class).getEmail();
-        Optional<User> newUser1= this.userRepository.findByEmail(email1);
-        UserDto newUser2 = this.mapper.map(newUser1,UserDto.class);
+        User user=this.userRepository.findByEmailAndPassword(email,password).orElseThrow(()->new ResourceNotFoundException("User email and password not found"));
         logger.info("Complete Dao call for get single User by email : {}",email);
-        return newUser2;
+        return this.mapper.map(user, UserDto.class);
     }
     /*
      * @author: rohini
@@ -80,7 +84,6 @@ public class UserServiceImpl implements UserServiceI {
         List<UserDto> allUsers=users.stream().map(user->mapper.map(user,UserDto.class)).collect(Collectors.toList());
         logger.info("Complete Dao call for get all User ");
         return allUsers;
-
     }
     /*
      * @author: rohini
@@ -93,7 +96,7 @@ public class UserServiceImpl implements UserServiceI {
     public UserDto updateUser(UserDto userDto, String userId) {
         logger.info("Initiating Dao call for update User by userID : {}",userId);
         User user1=this.mapper.map(userDto,User.class);
-        User updateuser=this.userRepository.findById(userId).orElseThrow(()-> new RuntimeException(AppConstants.NOT_FOUND +userId));
+        User updateuser=this.userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException(AppConstants.NOT_FOUND +userId));
         User newuser=this.userRepository.save(user1);
         logger.info("complete Dao call for update User by userID : {}",userId);
         return this.mapper.map(newuser,UserDto.class);
@@ -104,10 +107,11 @@ public class UserServiceImpl implements UserServiceI {
      * @param: userId
      */
     @Override
-    public void deleteUser(String userId) {
-        logger.info("Entering Dao call for delete the User by userID : {}",userId);
-        this.userRepository.findById(userId).orElseThrow(()->new RuntimeException(AppConstants.NOT_FOUND));
+    public String deleteUser(String userId) {
+        logger.info("Entering Dao call for delete the User by userID : {}", userId);
+        this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.NOT_FOUND));
         this.userRepository.deleteById(userId);
-        logger.info("complete Dao call for delete the User by userID : {}",userId);
+        logger.info("complete Dao call for delete the User by userID : {}", userId);
+        return AppConstants.USER_DELETE;
     }
 }
