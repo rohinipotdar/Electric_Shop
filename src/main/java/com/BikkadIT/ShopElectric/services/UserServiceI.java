@@ -1,6 +1,7 @@
 package com.BikkadIT.ShopElectric.services;
 
 
+import com.BikkadIT.ShopElectric.dtos.PageableResponse;
 import com.BikkadIT.ShopElectric.dtos.UserDto;
 import com.BikkadIT.ShopElectric.entities.User;
 
@@ -14,7 +15,7 @@ public interface UserServiceI {
    UserDto getUserById(String userId);
 
    //get all users
-   List<UserDto> getAllUsers ();
+   PageableResponse<UserDto> getAllUsers (int pageNumber, int pageSize, String sortBy, String sortDir);
 
    //update user
    UserDto updateUser(UserDto userDto,String userId);

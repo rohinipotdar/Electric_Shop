@@ -1,5 +1,6 @@
 package com.BikkadIT.ShopElectric.services.impl;
 
+import com.BikkadIT.ShopElectric.dtos.PageableResponse;
 import com.BikkadIT.ShopElectric.entities.User;
 import com.BikkadIT.ShopElectric.dtos.UserDto;
 import com.BikkadIT.ShopElectric.exceptions.ResourceNotFoundException;
@@ -11,6 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,12 +83,25 @@ public class UserServiceImpl implements UserServiceI {
      * @return
      */
     @Override
-    public List<UserDto> getAllUsers() {
-        List<User> users=this.userRepository.findAll();
+    public PageableResponse<UserDto> getAllUsers(int pageNumber, int pageSize, String sortBy, String sortDir) {
+
+        Sort sort = Sort.by(sortBy);
+        PageRequest pageable = PageRequest.of(pageNumber, pageSize,sort);
+        Page<User> page = this.userRepository.findAll(pageable);
+        List<User> users = page.getContent();
         logger.info("Initiating Dao call for get all User ");
         List<UserDto> allUsers=users.stream().map(user->mapper.map(user,UserDto.class)).collect(Collectors.toList());
+
+        PageableResponse<UserDto> response = new PageableResponse<>();
+        response.setContent(allUsers);
+        response.setPageNumber(page.getNumber());
+        response.setPageSize(page.getSize());
+        response.setTotalPages(page.getTotalPages());
+        response.setTotalElements(page.getTotalElements());
+        response.setLastPage(page.isLast());
+
         logger.info("Complete Dao call for get all User ");
-        return allUsers;
+        return response;
     }
     /*
      * @author: rohini

@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApiResponse {
-
+public class ImageResponse {
+    private String imageName;
     private String message;
 
     private boolean success;

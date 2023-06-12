@@ -1,17 +1,23 @@
 package com.BikkadIT.ShopElectric.controller;
 
+import com.BikkadIT.ShopElectric.dtos.PageableResponse;
 import com.BikkadIT.ShopElectric.dtos.UserDto;
 import com.BikkadIT.ShopElectric.helper.AppConstants;
 import com.BikkadIT.ShopElectric.payloads.ApiResponse;
+import com.BikkadIT.ShopElectric.payloads.ImageResponse;
+import com.BikkadIT.ShopElectric.services.FileService;
 import com.BikkadIT.ShopElectric.services.UserServiceI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,6 +25,11 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserServiceI userServiceI;
+
+    @Autowired
+    private FileService fileService;
+    @Value("${user.profile.image.path}")
+    private String imageUploadPath;
 
        private static Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -64,11 +75,16 @@ public class UserController {
      * @return
      */
     @GetMapping("/all")
-    public ResponseEntity<List<UserDto>> getAllUsers(){
+    public ResponseEntity<PageableResponse<UserDto>> getAllUsers(
+            @RequestParam (value = "pageNumber",defaultValue = "0") int pageNumber,
+            @RequestParam (value = "pageSize",defaultValue = "2") int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
+            @RequestParam (value = "sortDir", defaultValue = "ASC") String sortDir
+    ){
         logger.info("Request entering for get All Users");
-        List<UserDto> getAllUser=this.userServiceI.getAllUsers();
+        PageableResponse<UserDto> getAllUser=this.userServiceI.getAllUsers(pageNumber,pageSize,sortBy,sortDir);
         logger.info("Complete request for get All Users");
-        return new ResponseEntity<List<UserDto>>(getAllUser, HttpStatus.OK);
+        return new ResponseEntity<PageableResponse<UserDto>>(getAllUser, HttpStatus.OK);
     }
     /*
      * @author: rohini
@@ -94,6 +110,27 @@ public class UserController {
         logger.info("Request entering for Delete User with userId :{}", userId);
        this.userServiceI.deleteUser(userId);
         logger.info("Complete request for Delete User with userId :{}", userId);
-       return new ResponseEntity<>(new ApiResponse(AppConstants.USER_DELETE,true),HttpStatus.OK);
+       return new ResponseEntity<>(new ApiResponse(AppConstants.USER_DELETE,true,HttpStatus.OK),HttpStatus.OK);
+    }
+    /*
+     * @author: rohini
+     * @ApiNote: This method is for upload image
+     * @param: image, userId
+     * @return
+     */
+    @PostMapping("/image/{userId}")
+    public ResponseEntity<ImageResponse> uploadFile(
+            @RequestParam("userImage")MultipartFile image,
+    @PathVariable ("userId") String userId) throws IOException {
+        logger.info("Request entering for image upload");
+        String imageName = this.fileService.uploadFile(image, imageUploadPath);
+
+        UserDto user = this.userServiceI.getUserById(userId);
+        user.setImageName(imageName);
+        UserDto userDto = userServiceI.updateUser(user, userId);
+
+        ImageResponse imageResponse=ImageResponse.builder().imageName(imageName).success(true).status(HttpStatus.CREATED).build();
+        logger.info("Request complete for image upload");
+        return new ResponseEntity<>(imageResponse,HttpStatus.CREATED);
     }
 }
