@@ -43,10 +43,11 @@ public class GlobalExceptionsHandler {
         return new ResponseEntity<>(responce,HttpStatus.BAD_REQUEST);
 
     }
-    @ExceptionHandler(BadApiRequest.class)
-    public ResponseEntity<ApiResponse> resourceNotFoundException(BadApiRequest ex){
+    //Exception in file uploading
+    @ExceptionHandler(BadApiRequestException.class)
+    public ResponseEntity<ApiResponse> resourceNotFoundException(BadApiRequestException ex){
         logger.info("Exception Handler invoked  ... ");
-        ApiResponse responce = ApiResponse.builder().message(ex.getMessage()).success(true).build();
+        ApiResponse responce = ApiResponse.builder().message(ex.getMessage()).status(HttpStatus.BAD_REQUEST).success(true).build();
 
         return new ResponseEntity<>(responce,HttpStatus.BAD_REQUEST);
     }

@@ -1,6 +1,6 @@
 package com.BikkadIT.ShopElectric.services.impl;
 
-import com.BikkadIT.ShopElectric.exceptions.BadApiRequest;
+import com.BikkadIT.ShopElectric.exceptions.BadApiRequestException;
 import com.BikkadIT.ShopElectric.services.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class FileServiceImpl implements FileService {
             return fileNameWithExtension;
         }
         else {
-            throw new BadApiRequest("File with this"+extension+"not allowed");
+            throw new BadApiRequestException("File with this"+extension+"not allowed");
         }
 
     }
