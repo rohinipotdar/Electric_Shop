@@ -97,8 +97,12 @@ public class CategoryServiceImpl implements CategoryServiceI {
     public String deleteCategory(String categoryId) {
         logger.info("Initializing dto call for delete category : {}",categoryId);
         this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.NOT_FOUND + categoryId));
+
         this.categoryRepo.deleteById(categoryId);
         logger.info("complete dto call for get category : {}",categoryId);
         return AppConstants.USER_DELETE;
     }
 }
+
+
+
