@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Entity
 @Setter
@@ -12,7 +13,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "product_info")
+@Table(name = "products_info")
 public class Products {
     @Id
     private String productId;
@@ -22,7 +23,7 @@ public class Products {
     private Double price;
     private Double discount;
     private int quantity;
-    private Data addedDate;
+    private Date addedDate;
     private Boolean live;
     private Boolean stock;
 

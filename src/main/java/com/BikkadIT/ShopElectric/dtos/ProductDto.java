@@ -4,7 +4,9 @@ import lombok.*;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -23,7 +25,7 @@ public class ProductDto {
     @Size(min=5,max=500,message = "description size should be in between 5 to 50 chars")
     private String description;
 
-    @NotEmpty(message = "title size should be in between 5 to 50 chars")
+    @NotNull(message = "title size should be in between 5 to 50 chars")
     private Double price;
 
     @Range(min=5, max = 50, message = "Discount should not be more than 50%")
@@ -32,7 +34,7 @@ public class ProductDto {
     @Range(min=1, message = "quantity should more than 1")
     private int quantity;
 
-    private Data addedDate;
+    private Date addedDate;
 
     private Boolean live;
 

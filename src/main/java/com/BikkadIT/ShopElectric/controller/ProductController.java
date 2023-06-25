@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -59,7 +60,7 @@ public class ProductController {
     public ResponseEntity<PageableResponse<ProductDto>> getAllUsers(
             @RequestParam (value = "pageNumber",defaultValue = "0") int pageNumber,
             @RequestParam (value = "pageSize",defaultValue = "2") int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
+            @RequestParam(value = "sortBy", defaultValue = "title") String sortBy,
             @RequestParam (value = "sortDir", defaultValue = "ASC") String sortDir
     ){
         logger.info("Request entering for get All Product");
@@ -75,7 +76,7 @@ public class ProductController {
      * @return
      */
     @PutMapping("/{productId}")
-    public ResponseEntity<ProductDto> updateUser(@Valid @RequestBody ProductDto productDto, @PathVariable String productId){
+    public ResponseEntity<ProductDto> updateProd(@Valid @RequestBody ProductDto productDto, @PathVariable String productId){
         logger.info("Request entering for the update Product with productId :{}", productId);
         ProductDto getNewProd=this.productServiceI.updateProducts(productDto,productId);
         logger.info("Completed request for the update Product with productId :{}", productId);
@@ -92,5 +93,12 @@ public class ProductController {
         this.productServiceI.deleteProduct(productId);
         logger.info("Complete request for Delete Product with productId :{}", productId);
         return new ResponseEntity<>(new ApiResponse(AppConstants.USER_DELETE,true,HttpStatus.OK),HttpStatus.OK);
+    }
+    @GetMapping("/getallprods/{title}")
+    public ResponseEntity<List<ProductDto>> getProductsBytitle(@PathVariable String title){
+        logger.info("Request entering for get All Product by title ");
+        List<ProductDto> allBytitle = this.productServiceI.getAllBytitle(title);
+        logger.info("Complete request for get All Product by title");
+        return new ResponseEntity<>(allBytitle, HttpStatus.OK);
     }
 }

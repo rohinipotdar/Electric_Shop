@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ public class ProductServiceImpl implements ProductServiceI{
         logger.info("Initiating Dao call for create product");
         String productId = UUID.randomUUID().toString();
         productDto.setProductId(productId);
+        productDto.setAddedDate(new Date());
         Products products = this.mapper.map(productDto, Products.class);
         Products newProd=this.productRepo.save(products);
         ProductDto newUser1=this.mapper.map(newProd,ProductDto.class);
@@ -59,12 +61,12 @@ public class ProductServiceImpl implements ProductServiceI{
 
     @Override
     public ProductDto updateProducts(ProductDto productDto, String productId) {
-        logger.info("Initiating Dao call for update Product by userID : {}",productId);
+        logger.info("Initiating Dao call for update User by userID : {}",productId);
         Products user1=this.mapper.map(productDto,Products.class);
-        Products updateProd=this.productRepo.findById(productId).orElseThrow(()-> new ResourceNotFoundException(AppConstants.NOT_FOUND +productId));
-        Products newProd=this.productRepo.save(updateProd);
+        Products updateuser=this.productRepo.findById(productId).orElseThrow(()-> new ResourceNotFoundException(AppConstants.NOT_FOUND +productId));
+        Products newuser=this.productRepo.save(user1);
         logger.info("complete Dao call for update User by userID : {}",productId);
-        return this.mapper.map(newProd,ProductDto.class);
+        return this.mapper.map(newuser,ProductDto.class);
     }
 
     /*
