@@ -1,5 +1,6 @@
 package com.BikkadIT.ShopElectric.services;
 
+import com.BikkadIT.ShopElectric.dtos.PageableResponse;
 import com.BikkadIT.ShopElectric.dtos.ProductDto;
 import com.BikkadIT.ShopElectric.entities.Products;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +20,7 @@ public interface ProductServiceI {
     ProductDto getProductById(String productId);
 
     //get All Products
-    List<ProductDto> getAllProducts();
+    PageableResponse<ProductDto> getAllProducts(int pageNumber, int pageSize, String sortBy, String sortDir);
 
     //get products by title
     List<ProductDto> getAllBytitle(String title);
