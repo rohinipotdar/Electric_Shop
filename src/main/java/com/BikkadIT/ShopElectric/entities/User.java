@@ -11,7 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name = "user_table")
 @Builder
-public class User {
+public class User extends BaseClass {
     @Id
    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private String userId;
