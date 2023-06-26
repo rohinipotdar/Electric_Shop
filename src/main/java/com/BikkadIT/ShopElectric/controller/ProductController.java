@@ -5,16 +5,25 @@ import com.BikkadIT.ShopElectric.dtos.ProductDto;
 import com.BikkadIT.ShopElectric.dtos.UserDto;
 import com.BikkadIT.ShopElectric.helper.AppConstants;
 import com.BikkadIT.ShopElectric.payloads.ApiResponse;
+import com.BikkadIT.ShopElectric.payloads.ImageResponse;
+import com.BikkadIT.ShopElectric.services.FileService;
 import com.BikkadIT.ShopElectric.services.ProductServiceI;
 import com.BikkadIT.ShopElectric.services.impl.ProductServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -23,6 +32,11 @@ public class ProductController {
     @Autowired
     private ProductServiceI productServiceI;
 
+    @Autowired
+    private FileService fileService;
+
+    @Value("${product.image.path}")
+    private String imagePath;
     private static Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     /*
@@ -94,6 +108,12 @@ public class ProductController {
         logger.info("Complete request for Delete Product with productId :{}", productId);
         return new ResponseEntity<>(new ApiResponse(AppConstants.USER_DELETE,true,HttpStatus.OK),HttpStatus.OK);
     }
+    /*
+     * @author: rohini
+     * @ApiNote: This method is for get all Products by title
+     * @param: title
+     * @return
+     */
     @GetMapping("/getallprods/{title}")
     public ResponseEntity<List<ProductDto>> getProductsBytitle(@PathVariable String title){
         logger.info("Request entering for get All Product by title ");
@@ -101,4 +121,39 @@ public class ProductController {
         logger.info("Complete request for get All Product by title");
         return new ResponseEntity<>(allBytitle, HttpStatus.OK);
     }
+
+    /*
+     * @author: rohini
+     * @ApiNote: This method is for upload image in Products
+     * @param: image, productId
+     * @return
+     */
+    @PostMapping("/image/{productId}")
+    public ResponseEntity<ImageResponse> uploadProductImage(
+            @PathVariable String productId,
+            @RequestParam("productImage")MultipartFile image
+            ) throws IOException {
+        String fileName = fileService.uploadFile(image, imagePath);
+        ProductDto productDto = this.productServiceI.getProductById(productId);
+        productDto.setProductImageName(fileName);
+        ProductDto updateProducts = productServiceI.updateProducts(productDto, productId);
+
+        ImageResponse imageResponse = ImageResponse.builder().imageName(updateProducts.getProductImageName()).message("Product image uploaded successfully").status(HttpStatus.OK).success(true).build();
+   return new ResponseEntity<>(imageResponse,HttpStatus.CREATED);
+
+    }
+//serve image
+/*
+ * @author: rohini
+ * @ApiNote: This method is for serve image in Products
+ * @param: imageresponse, productId
+ */
+@GetMapping("/image/{productId}")
+        public void serveImage(@PathVariable String productId, HttpServletResponse imageresponse) throws IOException {
+    ProductDto product = productServiceI.getProductById(productId);
+    logger.info("user image name: {}",productId);
+    InputStream resource = fileService.getResource(imagePath, product.getProductImageName());
+    imageresponse.setContentType(MediaType.IMAGE_JPEG_VALUE);
+    StreamUtils.copy(resource,imageresponse.getOutputStream());
+}
 }

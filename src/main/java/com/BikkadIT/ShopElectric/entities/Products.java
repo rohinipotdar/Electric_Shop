@@ -26,5 +26,6 @@ public class Products {
     private Date addedDate;
     private Boolean live;
     private Boolean stock;
+    private String productImageName;
 
 }
