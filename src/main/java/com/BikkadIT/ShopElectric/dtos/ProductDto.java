@@ -1,5 +1,6 @@
 package com.BikkadIT.ShopElectric.dtos;
 
+import com.BikkadIT.ShopElectric.entities.Category;
 import lombok.*;
 import org.hibernate.validator.constraints.Range;
 
@@ -41,4 +42,5 @@ public class ProductDto {
     private Boolean stock;
 
     private String productImageName;
+    private CategoryDto category;
 }

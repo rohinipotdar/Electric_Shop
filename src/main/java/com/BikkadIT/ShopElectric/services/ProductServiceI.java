@@ -28,4 +28,9 @@ public interface ProductServiceI {
     //delete product
     void deleteProduct(String productId);
 
+    //create product with category
+    ProductDto createProductWithCategory(ProductDto productDto, String categoryId);
+
+
+
 }
