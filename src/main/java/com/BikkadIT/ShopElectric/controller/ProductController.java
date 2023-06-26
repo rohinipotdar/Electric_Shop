@@ -131,7 +131,7 @@ public class ProductController {
     @PostMapping("/image/{productId}")
     public ResponseEntity<ImageResponse> uploadProductImage(
             @PathVariable String productId,
-            @RequestParam("productImage")MultipartFile image
+            @RequestParam("productImage") MultipartFile image
             ) throws IOException {
         String fileName = fileService.uploadFile(image, imagePath);
         ProductDto productDto = this.productServiceI.getProductById(productId);
