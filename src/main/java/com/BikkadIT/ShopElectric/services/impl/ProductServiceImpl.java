@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductServiceI{
         logger.info("Initiating Dao call for update User by userID : {}",productId);
         Products user1=this.mapper.map(productDto,Products.class);
         Products updateuser=this.productRepo.findById(productId).orElseThrow(()-> new ResourceNotFoundException(AppConstants.NOT_FOUND +productId));
-        Products newuser=this.productRepo.save(user1);
+        Products newuser=this.productRepo.save(updateuser);
         logger.info("complete Dao call for update User by userID : {}",productId);
         return this.mapper.map(newuser,ProductDto.class);
     }
