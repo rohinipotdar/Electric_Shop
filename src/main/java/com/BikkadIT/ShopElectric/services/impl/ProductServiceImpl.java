@@ -61,12 +61,12 @@ public class ProductServiceImpl implements ProductServiceI{
 
     @Override
     public ProductDto updateProducts(ProductDto productDto, String productId) {
-        logger.info("Initiating Dao call for update User by userID : {}",productId);
-        Products user1=this.mapper.map(productDto,Products.class);
-        Products updateuser=this.productRepo.findById(productId).orElseThrow(()-> new ResourceNotFoundException(AppConstants.NOT_FOUND +productId));
-        Products newuser=this.productRepo.save(updateuser);
+        logger.info("Initiating Dao call for update Product by userID : {}",productId);
+        Products prod1=this.mapper.map(productDto,Products.class);
+        Products updateprod=this.productRepo.findById(productId).orElseThrow(()-> new ResourceNotFoundException(AppConstants.NOT_FOUND +productId));
+        Products newprod=this.productRepo.save(updateprod);
         logger.info("complete Dao call for update User by userID : {}",productId);
-        return this.mapper.map(newuser,ProductDto.class);
+        return this.mapper.map(newprod,ProductDto.class);
     }
 
     /*
