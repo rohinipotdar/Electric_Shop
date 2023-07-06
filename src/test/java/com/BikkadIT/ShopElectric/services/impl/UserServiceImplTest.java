@@ -13,8 +13,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,18 +46,8 @@ class UserServiceImplTest {
     @BeforeEach
     public void init(){
 
-        userDto = UserDto.builder().
-        userId("101")
-                .name("raj")
-                .email("raj@gmail.com")
-                .gender("male")
-                .password("raj123")
-                .about("java developer")
-                .imageName("raj.png")
-                .build();
-
-        user = User.builder().
-                userId("102")
+                user = User.builder().
+                userId("101")
                 .name("rani")
                 .email("rani@gmail.com")
                 .gender("female")
@@ -62,7 +57,7 @@ class UserServiceImplTest {
                 .build();
 
         user1 = User.builder().
-                userId("103")
+                userId("102")
                 .name("aditya")
                 .email("aditya@gmail.com")
                 .gender("male")
@@ -78,7 +73,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void createUser() {
+    void createUserTest() {
 
         Mockito.when(this.userRepository.save(Mockito.any())).thenReturn(user);
 
@@ -88,7 +83,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserById() {
+    void getUserByIdTest() {
         Mockito.when(this.userRepository.findById(user.getUserId())).thenReturn(Optional.ofNullable(user));
 
         UserDto user2 = userServiceI.getUserById(user.getUserId());
@@ -98,7 +93,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserByEmailAndPassword() {
+    void getUserByEmailAndPasswordTest() {
 
         Mockito.when(this.userRepository.findByEmailAndPassword(user.getEmail(),user.getPassword())).thenReturn(Optional.ofNullable(user));
 
@@ -108,18 +103,49 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getAllUsers() {
-        Mockito.when(this.userRepository.findAll()).thenReturn(users);
+    public void getAllUsersTest() {
 
-        PageableResponse<UserDto> allUsers = userServiceI.getAllUsers(0, 2, "userId", "ASC");
-        Assertions.assertEquals(users,allUsers);
+        users= Arrays.asList(user,user1);
+
+        Page<User> pages=new PageImpl<>(users);
+
+        Mockito.when(this.userRepository.findAll((Pageable)Mockito.any())).thenReturn(pages);
+
+        PageableResponse<UserDto> allUsers = userServiceI.getAllUsers(1, 2, "userId","asc" );
+        Assertions.assertEquals(2,allUsers.getContent().size());
     }
 
     @Test
-    void updateUser() {
+    public void updateUserTest() {
+        String userId="101";
+
+
+        userDto = UserDto.builder()
+                .name("raj")
+                .gender("male")
+                .password("raj123")
+                .about("java developer")
+                .imageName("raj.png")
+                .build();
+
+        Mockito.when(userRepository.findById(Mockito.anyString())).thenReturn(Optional.ofNullable(user));
+        Mockito.when(userRepository.save(Mockito.any())).thenReturn(user);
+        UserDto updateUser = userServiceI.updateUser(userDto, userId);
+
+        System.out.println(updateUser.getName());
+        Assertions.assertNotNull(userDto);
+
     }
 
     @Test
-    void deleteUser() {
+    void deleteUserTest() {
+
+        Mockito.when(userRepository.findById(Mockito.anyString())).thenReturn(Optional.ofNullable(user));
+
+        String deleteUser = userServiceI.deleteUser(user.getUserId());
+
+        Mockito.verify(userRepository,Mockito.times(1)).deleteById(user.getUserId());
+
+        Assertions.assertNull(null,"user deleted");
     }
 }
