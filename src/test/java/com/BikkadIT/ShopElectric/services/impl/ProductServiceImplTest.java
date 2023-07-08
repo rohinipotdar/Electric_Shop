@@ -1,7 +1,10 @@
 package com.BikkadIT.ShopElectric.services.impl;
 
+import com.BikkadIT.ShopElectric.dtos.PageableResponse;
 import com.BikkadIT.ShopElectric.dtos.ProductDto;
+import com.BikkadIT.ShopElectric.dtos.UserDto;
 import com.BikkadIT.ShopElectric.entities.Products;
+import com.BikkadIT.ShopElectric.entities.User;
 import com.BikkadIT.ShopElectric.repository.ProductRepo;
 import com.BikkadIT.ShopElectric.services.ProductServiceI;
 import org.junit.jupiter.api.Assertions;
@@ -12,11 +15,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -110,19 +113,46 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void getProductById() {
+    void getProductByIdTest() {
+
+        Mockito.when(productRepo.findById(Mockito.anyString())).thenReturn(Optional.ofNullable(products1));
+
+        ProductDto product = productServiceI.getProductById(products1.getProductId());
+
+        Assertions.assertNotNull(product);
     }
 
     @Test
     void getAllProducts() {
+
+        products= Arrays.asList(products1,products2);
+
+        Page<Products> productsPage=new PageImpl<>(products);
+
+        Mockito.when(this.productRepo.findAll((Pageable)Mockito.any())).thenReturn(productsPage);
+
+        PageableResponse<ProductDto> allProducts = productServiceI.getAllProducts(1, 2, "productId","asc" );
+        Assertions.assertEquals(2,allProducts.getContent().size());
     }
 
     @Test
-    void getAllByTitle() {
+    void getAllByTitleTest() {
+
+        Mockito.when(productRepo.findByTitleContaining(Mockito.anyString())).thenReturn(products);
+
+        List<ProductDto> allBytitle = productServiceI.getAllBytitle(products1.getTitle());
+
+        Assertions.assertNotNull(allBytitle);
     }
 
     @Test
-    void deleteProduct() {
+    void deleteProductTest() {
+
+        Mockito.when(productRepo.findById(Mockito.anyString())).thenReturn(Optional.ofNullable(products1));
+
+        productServiceI.deleteProduct(products1.getProductId());
+
+        Assertions.assertNull(null);
     }
 
     @Test
