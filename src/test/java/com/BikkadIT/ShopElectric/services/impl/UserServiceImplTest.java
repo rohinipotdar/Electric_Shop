@@ -133,7 +133,7 @@ class UserServiceImplTest {
         UserDto updateUser = userServiceI.updateUser(userDto, userId);
 
         System.out.println(updateUser.getName());
-        Assertions.assertNotNull(userDto);
+        Assertions.assertNotNull(updateUser);
 
     }
 
