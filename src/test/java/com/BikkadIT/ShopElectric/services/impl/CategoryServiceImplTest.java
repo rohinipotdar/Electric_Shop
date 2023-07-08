@@ -75,7 +75,7 @@ class CategoryServiceImplTest {
 
      Mockito.when(categoryRepo.save(Mockito.any())).thenReturn(category);
 
-     CategoryDto category1 = categoryServiceI.createCategory(categoryDto);
+     CategoryDto category1 = categoryServiceI.createCategory(mapper.map(category,CategoryDto.class));
 
      Assertions.assertNotNull(category1);
 
