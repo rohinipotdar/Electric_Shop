@@ -99,11 +99,47 @@ class CategoryControllerTest {
     }
 
     @Test
-    void updateCategory() {
+    void updateCategory() throws Exception {
+
+        String categoryId="101";
+        categoryDto =CategoryDto.builder()
+                .categoryId("101")
+                .title("mobile phones")
+                .description("all phones are android")
+                .coverImage("mobile123.png")
+                .build();
+
+        Mockito.when(categoryServiceI.updateCategory(Mockito.any(),Mockito.anyString())).thenReturn(categoryDto);
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.put("/api/categories/"+categoryId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(ConvertObjectToJsonString(categoryDto))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").exists());
     }
 
     @Test
-    void getCategory() {
+    void getCategoryTest() throws Exception {
+        category =Category.builder()
+                .categoryId("101")
+                .title("mobile phones")
+                .description("all phones are android")
+                .coverImage("mobile123.png")
+                .products(product)
+                .build();
+
+        CategoryDto categoryDto=mapper.map(category,CategoryDto.class);
+
+        Mockito.when(categoryServiceI.getCategory(Mockito.anyString())).thenReturn(categoryDto);
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/categories/"+category.getCategoryId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ConvertObjectToJsonString(category))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").exists());
     }
 
     @Test
@@ -111,7 +147,17 @@ class CategoryControllerTest {
     }
 
     @Test
-    void deleteCategory() {
+    void deleteCategoryTest() throws Exception {
+        String categoryId="123";
+
+        Mockito.when(categoryServiceI.deleteCategory(Mockito.anyString())).thenReturn("category deleted");
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.delete("/api/categories/"+categoryId))
+                                /*.contentType(MediaType.APPLICATION_JSON)
+                                .content(ConvertObjectToJsonString(category))
+                                .accept(MediaType.APPLICATION_JSON))*/
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
