@@ -8,7 +8,7 @@ import com.BikkadIT.ShopElectric.payloads.ApiResponse;
 import com.BikkadIT.ShopElectric.payloads.ImageResponse;
 import com.BikkadIT.ShopElectric.services.FileService;
 import com.BikkadIT.ShopElectric.services.ProductServiceI;
-import com.BikkadIT.ShopElectric.services.impl.ProductServiceImpl;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class ProductController {
     @Autowired
     private FileService fileService;
 
-    @Value("${product.image.path}")
+    @Value("${product.profile.image.path}")
     private String imagePath;
     private static Logger logger = LoggerFactory.getLogger(ProductController.class);
 
@@ -131,15 +131,15 @@ public class ProductController {
     @PostMapping("/image/{productId}")
     public ResponseEntity<ImageResponse> uploadProductImage(
             @PathVariable String productId,
-            @RequestParam("productImage")MultipartFile image
+            @RequestParam("image") MultipartFile image
             ) throws IOException {
         String fileName = fileService.uploadFile(image, imagePath);
         ProductDto productDto = this.productServiceI.getProductById(productId);
         productDto.setProductImageName(fileName);
         ProductDto updateProducts = productServiceI.updateProducts(productDto, productId);
 
-        ImageResponse imageResponse = ImageResponse.builder().imageName(updateProducts.getProductImageName()).message("Product image uploaded successfully").status(HttpStatus.OK).success(true).build();
-   return new ResponseEntity<>(imageResponse,HttpStatus.CREATED);
+        ImageResponse imageResponse = ImageResponse.builder().imageName(fileName).message("Product image uploaded successfully").status(HttpStatus.OK).success(true).build();
+        return new ResponseEntity<>(imageResponse,HttpStatus.CREATED);
 
     }
 //serve image
@@ -149,11 +149,11 @@ public class ProductController {
  * @param: imageresponse, productId
  */
 @GetMapping("/image/{productId}")
-        public void serveImage(@PathVariable String productId, HttpServletResponse imageresponse) throws IOException {
+        public void serveImage(@PathVariable String productId, HttpServletResponse response) throws IOException {
     ProductDto product = productServiceI.getProductById(productId);
     logger.info("user image name: {}",productId);
     InputStream resource = fileService.getResource(imagePath, product.getProductImageName());
-    imageresponse.setContentType(MediaType.IMAGE_JPEG_VALUE);
-    StreamUtils.copy(resource,imageresponse.getOutputStream());
+    response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+    StreamUtils.copy(resource,response.getOutputStream());
 }
 }

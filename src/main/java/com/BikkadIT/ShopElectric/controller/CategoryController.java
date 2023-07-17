@@ -1,9 +1,11 @@
 package com.BikkadIT.ShopElectric.controller;
 
 import com.BikkadIT.ShopElectric.dtos.CategoryDto;
+import com.BikkadIT.ShopElectric.dtos.ProductDto;
 import com.BikkadIT.ShopElectric.helper.AppConstants;
 import com.BikkadIT.ShopElectric.payloads.ApiResponse;
 import com.BikkadIT.ShopElectric.services.CategoryServiceI;
+import com.BikkadIT.ShopElectric.services.ProductServiceI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class CategoryController {
 
     @Autowired
     private CategoryServiceI categoryServiceI;
+
+    @Autowired
+    private ProductServiceI productServiceI;
 
     private Logger logger= LoggerFactory.getLogger(CategoryController.class);
 
@@ -87,6 +92,23 @@ public class CategoryController {
         String str = this.categoryServiceI.deleteCategory(categoryId);
         logger.info("Request complete for get category");
         return new ResponseEntity<>(new ApiResponse(AppConstants.USER_DELETE,true,HttpStatus.OK),HttpStatus.OK);
+    }
+
+    //create product with categoryId
+    /*
+     * @author: rohini
+     * @ApiNote:  This method is for create product with Category
+     * @param: categoryId, productDto
+     * @return
+     */
+    @PostMapping("/{categoryId}/products")
+    public ResponseEntity<ProductDto> createProductWithCategory(
+            @PathVariable String categoryId,
+            @RequestBody ProductDto productDto
+    ){
+        ProductDto productWithCategory = this.productServiceI.createProductWithCategory(productDto, categoryId);
+        return new ResponseEntity<>(productWithCategory,HttpStatus.CREATED);
+
     }
 
 }

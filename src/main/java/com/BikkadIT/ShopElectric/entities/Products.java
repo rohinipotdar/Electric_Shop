@@ -2,9 +2,7 @@ package com.BikkadIT.ShopElectric.entities;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -26,6 +24,9 @@ public class Products {
     private Date addedDate;
     private Boolean live;
     private Boolean stock;
-    private String productImageName;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="category_id")
+    private Category category;
 
 }

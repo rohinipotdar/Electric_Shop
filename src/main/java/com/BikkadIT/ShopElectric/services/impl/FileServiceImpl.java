@@ -24,7 +24,7 @@ public class FileServiceImpl implements FileService {
         String fileNameWithExtension=filename+extension;
         String fullPathWithFileName=path+ File.separator+fileNameWithExtension;
 
-        if(extension.equalsIgnoreCase(".jpg")||extension.equalsIgnoreCase(".png")||extension.equalsIgnoreCase(".jpeg")){
+        if(extension.equalsIgnoreCase(".jpg")||extension.equalsIgnoreCase(".png")||extension.equalsIgnoreCase(".jpeg")||extension.equalsIgnoreCase(".doc")||extension.equalsIgnoreCase(".pdf")||extension.equalsIgnoreCase(".docx")){
          File folder=new File(path);
          if(!folder.exists()){
              folder.mkdirs();
@@ -32,6 +32,7 @@ public class FileServiceImpl implements FileService {
          //upload file
             Files.copy(file.getInputStream(), Paths.get(fullPathWithFileName));
             return fileNameWithExtension;
+
         }
         else {
             throw new BadApiRequestException("File with this"+extension+"not allowed");

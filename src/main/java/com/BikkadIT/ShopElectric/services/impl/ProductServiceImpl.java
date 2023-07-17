@@ -3,10 +3,12 @@ package com.BikkadIT.ShopElectric.services.impl;
 import com.BikkadIT.ShopElectric.dtos.PageableResponse;
 import com.BikkadIT.ShopElectric.dtos.ProductDto;
 import com.BikkadIT.ShopElectric.dtos.UserDto;
+import com.BikkadIT.ShopElectric.entities.Category;
 import com.BikkadIT.ShopElectric.entities.Products;
 import com.BikkadIT.ShopElectric.entities.User;
 import com.BikkadIT.ShopElectric.exceptions.ResourceNotFoundException;
 import com.BikkadIT.ShopElectric.helper.AppConstants;
+import com.BikkadIT.ShopElectric.repository.CategoryRepo;
 import com.BikkadIT.ShopElectric.repository.ProductRepo;
 import com.BikkadIT.ShopElectric.services.ProductServiceI;
 import org.modelmapper.ModelMapper;
@@ -30,6 +32,9 @@ public class ProductServiceImpl implements ProductServiceI{
 
     @Autowired
     private ProductRepo productRepo;
+
+    @Autowired
+    private CategoryRepo categoryRepo;
 
     private static Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
     /*
@@ -62,9 +67,9 @@ public class ProductServiceImpl implements ProductServiceI{
     @Override
     public ProductDto updateProducts(ProductDto productDto, String productId) {
         logger.info("Initiating Dao call for update Product by userID : {}",productId);
+        this.productRepo.findById(productId).orElseThrow(()-> new ResourceNotFoundException(AppConstants.NOT_FOUND +productId));
         Products prod1=this.mapper.map(productDto,Products.class);
-        Products updateprod=this.productRepo.findById(productId).orElseThrow(()-> new ResourceNotFoundException(AppConstants.NOT_FOUND +productId));
-        Products newprod=this.productRepo.save(updateprod);
+        Products newprod=this.productRepo.save(prod1);
         logger.info("complete Dao call for update User by userID : {}",productId);
         return this.mapper.map(newprod,ProductDto.class);
     }
@@ -135,7 +140,23 @@ public class ProductServiceImpl implements ProductServiceI{
         this.productRepo.deleteById(productId);
         logger.info("complete Dao call for delete Products by productId ");
     }
-
+    /*
+     * @author: rohini
+     * @implNote:  This method is for create Products by categoryId
+     * @param productDto, categoryId
+     * @ return
+     */
+    @Override
+    public ProductDto createProductWithCategory(ProductDto productDto, String categoryId) {
+        Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.NOT_FOUND + categoryId));
+        Products products = this.mapper.map(productDto, Products.class);
+        String id = UUID.randomUUID().toString();
+        products.setProductId(id);
+        products.setAddedDate(new Date());
+        products.setCategory(category);
+        Products saveProduct = this.productRepo.save(products);
+        return this.mapper.map(saveProduct,ProductDto.class);
+    }
 
 
 }

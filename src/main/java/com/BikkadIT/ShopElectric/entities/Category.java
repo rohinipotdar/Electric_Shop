@@ -2,12 +2,12 @@ package com.BikkadIT.ShopElectric.entities;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
@@ -29,4 +29,7 @@ public class Category {
     private  String description;
 
     private String coverImage;
+
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Products> products=new ArrayList<>();
 }
