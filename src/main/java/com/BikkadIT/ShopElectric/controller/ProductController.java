@@ -59,7 +59,7 @@ public class ProductController {
      * @return
      */
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductDto> getUser(@PathVariable String productId){
+    public ResponseEntity<ProductDto> getProductById(@PathVariable String productId){
         logger.info("Request entering the get single Product with productId :{}", productId);
         ProductDto getProd=this.productServiceI.getProductById(productId);
         logger.info("Completed request for get single Product with productId :{}", productId);
@@ -71,7 +71,7 @@ public class ProductController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<PageableResponse<ProductDto>> getAllUsers(
+    public ResponseEntity<PageableResponse<ProductDto>> getAllProducts(
             @RequestParam (value = "pageNumber",defaultValue = "0") int pageNumber,
             @RequestParam (value = "pageSize",defaultValue = "2") int pageSize,
             @RequestParam(value = "sortBy", defaultValue = "title") String sortBy,
