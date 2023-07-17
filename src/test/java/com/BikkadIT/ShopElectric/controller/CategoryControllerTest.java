@@ -34,6 +34,8 @@ class CategoryControllerTest {
     private Category category1;
 
     private CategoryDto categoryDto;
+
+    private CategoryDto categoryDto1;
     List<Products> product;
 
     @MockBean
@@ -143,7 +145,33 @@ class CategoryControllerTest {
     }
 
     @Test
-    void getAllCategory() {
+    void getAllCategory() throws Exception {
+        categoryDto =CategoryDto.builder()
+                .categoryId("101")
+                .title("mobile phones")
+                .description("all phones are android")
+                .coverImage("mobile123.png")
+                .build();
+
+        categoryDto1 =CategoryDto.builder()
+                .categoryId("102")
+                .title("i phones")
+                .description("all phones are smart iphones")
+                .coverImage("mobile123.png")
+                .build();
+
+        List<CategoryDto> categoryDtos= new ArrayList<>();
+        categoryDtos.add(categoryDto);
+        categoryDtos.add(categoryDto1);
+
+        Mockito.when(categoryServiceI.getAllCategory()).thenReturn(categoryDtos);
+        //request for url
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/categories")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
