@@ -153,9 +153,6 @@ class CategoryControllerTest {
         Mockito.when(categoryServiceI.deleteCategory(Mockito.anyString())).thenReturn("category deleted");
         this.mockMvc.perform(
                         MockMvcRequestBuilders.delete("/api/categories/"+categoryId))
-                                /*.contentType(MediaType.APPLICATION_JSON)
-                                .content(ConvertObjectToJsonString(category))
-                                .accept(MediaType.APPLICATION_JSON))*/
                 .andDo(print())
                 .andExpect(status().isOk());
     }
