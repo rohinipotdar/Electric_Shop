@@ -186,10 +186,7 @@ class UserControllerTest {
 
         Mockito.when(userServiceI.deleteUser(Mockito.anyString())).thenReturn("user deleted");
         this.mockMvc.perform(
-                        MockMvcRequestBuilders.delete("/api/users/"+userId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(ConvertObjectToJsonString(userDto))
-                                .accept(MediaType.APPLICATION_JSON))
+                        MockMvcRequestBuilders.delete("/api/users/"+userId))
                 .andDo(print())
                 .andExpect(status().isOk());
 
