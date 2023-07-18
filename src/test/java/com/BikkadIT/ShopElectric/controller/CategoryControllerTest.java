@@ -1,9 +1,11 @@
 package com.BikkadIT.ShopElectric.controller;
 
 import com.BikkadIT.ShopElectric.dtos.CategoryDto;
+import com.BikkadIT.ShopElectric.dtos.ProductDto;
 import com.BikkadIT.ShopElectric.entities.Category;
 import com.BikkadIT.ShopElectric.entities.Products;
 import com.BikkadIT.ShopElectric.services.CategoryServiceI;
+import com.BikkadIT.ShopElectric.services.ProductServiceI;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +43,13 @@ class CategoryControllerTest {
 
     @MockBean
     private CategoryServiceI categoryServiceI;
+
+    @MockBean
+    private ProductServiceI productServiceI;
+
+    private Products products;
+
+    private ProductDto productDto;
 
     @Autowired
     private ModelMapper mapper;
@@ -186,6 +196,38 @@ class CategoryControllerTest {
     }
 
     @Test
-    void createProductWithCategory() {
+    void createProductWithCategoryTest() throws Exception {
+        category =Category.builder()
+                .categoryId("101")
+                .title("mobile phones")
+                .description("all phones are android")
+                .coverImage("mobile123.png")
+                .build();
+
+        Products product=Products.builder()
+                .productId("123")
+                .title("mobile")
+                .description("samsung mobile phones")
+                .price(25000.00)
+                .quantity(15)
+                .live(true)
+                .stock(true)
+                .addedDate(new Date())
+                .discount(10.50)
+                .category(category)
+                .build();
+
+       ProductDto productDto = this.mapper.map(product, ProductDto.class);
+
+        String categoryId="123";
+
+        Mockito.when(productServiceI.createProductWithCategory(Mockito.any(),Mockito.anyString())).thenReturn(productDto);
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/categories/"+categoryId+"/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ConvertObjectToJsonString(product))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated());
+
     }
 }
