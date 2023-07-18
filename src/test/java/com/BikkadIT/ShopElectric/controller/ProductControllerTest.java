@@ -1,7 +1,9 @@
 package com.BikkadIT.ShopElectric.controller;
 
 import com.BikkadIT.ShopElectric.dtos.CategoryDto;
+import com.BikkadIT.ShopElectric.dtos.PageableResponse;
 import com.BikkadIT.ShopElectric.dtos.ProductDto;
+import com.BikkadIT.ShopElectric.dtos.UserDto;
 import com.BikkadIT.ShopElectric.entities.Products;
 import com.BikkadIT.ShopElectric.payloads.ApiResponse;
 import com.BikkadIT.ShopElectric.services.ProductServiceI;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +41,8 @@ class ProductControllerTest {
     private Products products1;
 
     private ProductDto productDto;
+
+    private ProductDto productDto1;
 
     private List<Products> productsList;
 
@@ -172,8 +177,47 @@ class ProductControllerTest {
     }
 
     @Test
-    void getAllProductsTest(){
+    void getAllProductsTest() throws Exception {
+        ProductDto productDto=ProductDto.builder()
+                .title("mobile")
+                .description("samsung mobile phones")
+                .price(25000.00)
+                .quantity(15)
+                .live(true)
+                .stock(true)
+                .addedDate(new Date())
+                .discount(10.50)
+                .build();
 
+        ProductDto productDto1=ProductDto.builder()
+                .title("electronic appliances")
+                .description("fully automatic")
+                .price(45100.00)
+                .quantity(12)
+                .live(true)
+                .stock(true)
+                .addedDate(new Date())
+                .discount(10.50)
+                .build();
+
+        PageableResponse<ProductDto> pageableResponse= new PageableResponse<>();
+
+        pageableResponse.setLastPage(false);
+        pageableResponse.setTotalElements(50);
+        pageableResponse.setPageNumber(5);
+        pageableResponse.setContent(Arrays.asList(productDto,productDto1));
+        pageableResponse.setTotalPages(20);
+        pageableResponse.setPageSize(2);
+
+        Mockito.when(productServiceI.getAllProducts(Mockito.anyInt(),Mockito.anyInt(),Mockito.anyString(),Mockito.anyString())).thenReturn(pageableResponse);
+
+        //request for url
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/products")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
 
