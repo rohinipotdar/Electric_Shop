@@ -2,6 +2,7 @@ package com.BikkadIT.ShopElectric.entities;
 
 import lombok.*;
 
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,7 +13,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table(name = "order")
 public class Order {
 
@@ -39,7 +39,7 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order_item",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<OrderItem> orderItems= new ArrayList<>();
 
 }

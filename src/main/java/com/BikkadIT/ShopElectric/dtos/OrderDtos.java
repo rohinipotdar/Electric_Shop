@@ -2,12 +2,18 @@ package com.BikkadIT.ShopElectric.dtos;
 
 import com.BikkadIT.ShopElectric.entities.OrderItem;
 import com.BikkadIT.ShopElectric.entities.User;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class OrderDtos {
 
     private String orderId;
