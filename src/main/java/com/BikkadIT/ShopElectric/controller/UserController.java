@@ -123,8 +123,8 @@ public class UserController {
      */
     @PostMapping("/image/{userId}")
     public ResponseEntity<ImageResponse> uploadFile(
-            @RequestParam("userImage")MultipartFile image,
-    @PathVariable ("userId") String userId) throws IOException {
+            @RequestParam("userImage") MultipartFile image,
+            @PathVariable ("userId") String userId) throws IOException {
         logger.info("Request entering for image upload");
         String imageName = this.fileService.uploadFile(image, imageUploadPath);
 

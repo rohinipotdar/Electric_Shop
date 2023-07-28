@@ -3,6 +3,8 @@ package com.BikkadIT.ShopElectric.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
@@ -11,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name = "user_table")
 @Builder
-public class User {
+public class User extends BaseClass {
     @Id
    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private String userId;
@@ -33,4 +35,7 @@ public class User {
 
     @Column(name = "image_name")
     private String imageName;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Order> orders = new ArrayList<>();
 }
