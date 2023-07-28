@@ -17,13 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -81,8 +79,8 @@ public class UserController {
      */
     @GetMapping("/all")
     public ResponseEntity<PageableResponse<UserDto>> getAllUsers(
-            @RequestParam (value = "pageNumber",defaultValue = "0") int pageNumber,
-            @RequestParam (value = "pageSize",defaultValue = "2") int pageSize,
+            @RequestParam (value = "pageNumber",defaultValue = "AppConstants.page_Num_Default_Value") int pageNumber,
+            @RequestParam (value = "pageSize",defaultValue = "AppConstants.page_Size_Default_Value") int pageSize,
             @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
             @RequestParam (value = "sortDir", defaultValue = "ASC") String sortDir
     ){
