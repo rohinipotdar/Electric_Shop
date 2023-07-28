@@ -15,6 +15,8 @@ import com.BikkadIT.ShopElectric.repository.UserRepository;
 import com.BikkadIT.ShopElectric.services.CartServiceI;
 import com.BikkadIT.ShopElectric.services.ProductServiceI;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +45,17 @@ public class CartServiceImpl implements CartServiceI {
     @Autowired
     private ModelMapper mapper;
 
+    private static Logger logger= LoggerFactory.getLogger(CartServiceImpl.class);
+
+    /*
+     * @author: rohini
+     * @implNote:  This method is for addItem to cart
+     * @param: userId,request
+     * @return
+     */
     @Override
     public CartDtos addItemToCart(String userId, AddItemToCartRequest request) {
-
+        logger.info("Initiating Dao call for addItem by userId and request : {}", userId,request);
         String productId = request.getProductId();
         int quantity = request.getQuantity();
 
@@ -89,34 +99,38 @@ public class CartServiceImpl implements CartServiceI {
             .build();
         cart.getItems().add(cartItem);
         }
-
         cart.setUser(user);
         Cart savecart = cartRepository.save(cart);
+        logger.info("complete Dao call for addItemToCart");
         return mapper.map(savecart,CartDtos.class);
     }
 
     @Override
     public void removeItemFromCart(String userId, int cartItem) {
-
+        logger.info("Initiating Dao call for removeItem by userId and cartItem : {}", userId,cartItem);
         CartItem cartItem1 = cartItemRepository.findById(cartItem).orElseThrow(() -> new ResourceNotFoundException("Cart Item not found"));
+        logger.info("complete Dao call for removeItem by userId and cartItem : {}", userId,cartItem);
         cartItemRepository.delete(cartItem1);
 
     }
 
     @Override
     public void clearCart(String userId) {
+        logger.info("Initiating Dao call for clear cart by userId {}", userId);
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found"));
 
         Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("user not found"));
-
+        logger.info("complete Dao call for clear cart by userId {}", userId);
         cartRepository.delete(cart);
 
     }
 
     @Override
     public CartDtos getCartByUser(String userId) {
+        logger.info("Initiating Dao call for get cart by userId {}", userId);
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found"));
         Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("user not found"));
+        logger.info("complete Dao call for get cart by userId {}", userId);
         return mapper.map(cart,CartDtos.class);
     }
 }
