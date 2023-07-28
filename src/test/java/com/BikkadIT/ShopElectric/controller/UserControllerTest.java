@@ -1,5 +1,6 @@
 package com.BikkadIT.ShopElectric.controller;
 
+import com.BikkadIT.ShopElectric.dtos.PageableResponse;
 import com.BikkadIT.ShopElectric.dtos.UserDto;
 import com.BikkadIT.ShopElectric.entities.User;
 import com.BikkadIT.ShopElectric.services.UserServiceI;
@@ -154,10 +155,51 @@ class UserControllerTest {
     }
 
     @Test
-    void getAllUsersTest() {
+    void getAllUsersTest() throws Exception {
 
-        List<User> users= Arrays.asList(user,user1);
+        UserDto userDto1 = UserDto.builder()
+                .name("shlok ")
+                .email("shlok@gmail.com")
+                .password("shlok123")
+                .gender("female")
+                .about("Testing method for getting all user")
+                .imageName("xyz.png")
+                .build();
+        UserDto userDto2 = UserDto.builder()
+                .name("siya")
+                .email("siya@gmail.com")
+                .password("siya123")
+                .gender("female")
+                .about("Testing method for getting all user")
+                .imageName("xyz.png")
+                .build();
+        UserDto userDto3 = UserDto.builder()
+                .name("jiya salunke")
+                .email("jiya@gmail.com")
+                .password("jiya123")
+                .gender("female")
+                .about("Testing method for getting all user")
+                .imageName("xyz.png")
+                .build();
 
+        PageableResponse<UserDto> pageableResponse= new PageableResponse<>();
+
+        pageableResponse.setLastPage(false);
+        pageableResponse.setTotalElements(200);
+        pageableResponse.setPageNumber(5);
+        pageableResponse.setContent(Arrays.asList(userDto1,userDto2,userDto3));
+        pageableResponse.setTotalPages(20);
+        pageableResponse.setPageSize(2);
+
+        Mockito.when(userServiceI.getAllUsers(Mockito.anyInt(),Mockito.anyInt(),Mockito.anyString(),Mockito.anyString())).thenReturn(pageableResponse);
+
+        //request for url
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/users/all")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
 
 
     }
@@ -186,10 +228,7 @@ class UserControllerTest {
 
         Mockito.when(userServiceI.deleteUser(Mockito.anyString())).thenReturn("user deleted");
         this.mockMvc.perform(
-                        MockMvcRequestBuilders.delete("/api/users/"+userId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(ConvertObjectToJsonString(userDto))
-                                .accept(MediaType.APPLICATION_JSON))
+                        MockMvcRequestBuilders.delete("/api/users/"+userId))
                 .andDo(print())
                 .andExpect(status().isOk());
 

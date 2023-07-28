@@ -1,9 +1,11 @@
 package com.BikkadIT.ShopElectric.controller;
 
 import com.BikkadIT.ShopElectric.dtos.CategoryDto;
+import com.BikkadIT.ShopElectric.dtos.ProductDto;
 import com.BikkadIT.ShopElectric.entities.Category;
 import com.BikkadIT.ShopElectric.entities.Products;
 import com.BikkadIT.ShopElectric.services.CategoryServiceI;
+import com.BikkadIT.ShopElectric.services.ProductServiceI;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,10 +37,19 @@ class CategoryControllerTest {
     private Category category1;
 
     private CategoryDto categoryDto;
+
+    private CategoryDto categoryDto1;
     List<Products> product;
 
     @MockBean
     private CategoryServiceI categoryServiceI;
+
+    @MockBean
+    private ProductServiceI productServiceI;
+
+    private Products products;
+
+    private ProductDto productDto;
 
     @Autowired
     private ModelMapper mapper;
@@ -99,22 +111,123 @@ class CategoryControllerTest {
     }
 
     @Test
-    void updateCategory() {
+    void updateCategory() throws Exception {
+
+        String categoryId="101";
+        categoryDto =CategoryDto.builder()
+                .categoryId("101")
+                .title("mobile phones")
+                .description("all phones are android")
+                .coverImage("mobile123.png")
+                .build();
+
+        Mockito.when(categoryServiceI.updateCategory(Mockito.any(),Mockito.anyString())).thenReturn(categoryDto);
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.put("/api/categories/"+categoryId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(ConvertObjectToJsonString(categoryDto))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").exists());
     }
 
     @Test
-    void getCategory() {
+    void getCategoryTest() throws Exception {
+        category =Category.builder()
+                .categoryId("101")
+                .title("mobile phones")
+                .description("all phones are android")
+                .coverImage("mobile123.png")
+                .products(product)
+                .build();
+
+        CategoryDto categoryDto=mapper.map(category,CategoryDto.class);
+
+        Mockito.when(categoryServiceI.getCategory(Mockito.anyString())).thenReturn(categoryDto);
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/categories/"+category.getCategoryId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ConvertObjectToJsonString(category))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").exists());
     }
 
     @Test
-    void getAllCategory() {
+    void getAllCategory() throws Exception {
+        categoryDto =CategoryDto.builder()
+                .categoryId("101")
+                .title("mobile phones")
+                .description("all phones are android")
+                .coverImage("mobile123.png")
+                .build();
+
+        categoryDto1 =CategoryDto.builder()
+                .categoryId("102")
+                .title("i phones")
+                .description("all phones are smart iphones")
+                .coverImage("mobile123.png")
+                .build();
+
+        List<CategoryDto> categoryDtos= new ArrayList<>();
+        categoryDtos.add(categoryDto);
+        categoryDtos.add(categoryDto1);
+
+        Mockito.when(categoryServiceI.getAllCategory()).thenReturn(categoryDtos);
+        //request for url
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/categories")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
-    void deleteCategory() {
+    void deleteCategoryTest() throws Exception {
+        String categoryId="123";
+
+        Mockito.when(categoryServiceI.deleteCategory(Mockito.anyString())).thenReturn("category deleted");
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.delete("/api/categories/"+categoryId))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
-    void createProductWithCategory() {
+    void createProductWithCategoryTest() throws Exception {
+        category =Category.builder()
+                .categoryId("101")
+                .title("mobile phones")
+                .description("all phones are android")
+                .coverImage("mobile123.png")
+                .build();
+
+        Products product=Products.builder()
+                .productId("123")
+                .title("mobile")
+                .description("samsung mobile phones")
+                .price(25000.00)
+                .quantity(15)
+                .live(true)
+                .stock(true)
+                .addedDate(new Date())
+                .discount(10.50)
+                .category(category)
+                .build();
+
+       ProductDto productDto = this.mapper.map(product, ProductDto.class);
+
+        String categoryId="123";
+
+        Mockito.when(productServiceI.createProductWithCategory(Mockito.any(),Mockito.anyString())).thenReturn(productDto);
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/categories/"+categoryId+"/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ConvertObjectToJsonString(product))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated());
+
     }
 }
