@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "order")
+@Builder
 public class Order {
 
     private String orderId;
@@ -33,7 +34,7 @@ public class Order {
 
     private Date orderDate;
 
-    private Date DeliveryDate;
+    private Date deliveryDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
