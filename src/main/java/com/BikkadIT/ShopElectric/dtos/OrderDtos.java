@@ -24,7 +24,7 @@ public class OrderDtos {
     private String billingPhone;
     private String billingName;
     private Date orderDate;
-    private Date DeliveryDate;
+    private Date deliveryDate;
     private UserDto userDto;
     private List<OrderItemDto> orderItemsDtos = new ArrayList<>();
 }
