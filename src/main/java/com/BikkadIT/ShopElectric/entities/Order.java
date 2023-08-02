@@ -13,10 +13,11 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "order")
+@Table(name = "order_details")
 @Builder
-public class Order {
+public class Order extends BaseClass {
 
+    @Id
     private String orderId;
 
     private String orderStatus;
@@ -40,7 +41,7 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order_item",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<OrderItem> orderItems= new ArrayList<>();
 
 }

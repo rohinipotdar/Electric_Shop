@@ -1,9 +1,6 @@
 package com.BikkadIT.ShopElectric.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,7 +10,8 @@ import javax.persistence.*;
 @Setter
 @Getter
 @Table(name = "order_item")
-public class OrderItem {
+@Builder
+public class OrderItem extends BaseClass {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

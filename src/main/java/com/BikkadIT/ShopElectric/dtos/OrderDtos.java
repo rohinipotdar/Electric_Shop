@@ -1,5 +1,6 @@
 package com.BikkadIT.ShopElectric.dtos;
 
+import com.BikkadIT.ShopElectric.entities.BaseClass;
 import com.BikkadIT.ShopElectric.entities.OrderItem;
 import com.BikkadIT.ShopElectric.entities.User;
 import lombok.*;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderDtos {
+public class OrderDtos extends BaseClass {
 
     private String orderId;
     private String orderStatus;

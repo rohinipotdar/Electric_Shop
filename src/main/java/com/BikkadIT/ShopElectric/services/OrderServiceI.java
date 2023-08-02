@@ -1,14 +1,14 @@
 package com.BikkadIT.ShopElectric.services;
 
+import com.BikkadIT.ShopElectric.dtos.CreateOrderRequest;
 import com.BikkadIT.ShopElectric.dtos.OrderDtos;
 import com.BikkadIT.ShopElectric.dtos.PageableResponse;
-import com.BikkadIT.ShopElectric.entities.CreateOrderRequest;
 
 import java.util.List;
 
 public interface OrderServiceI {
 
-    OrderDtos createOrder(OrderDtos orderDtos);
+    OrderDtos createOrder(CreateOrderRequest orderDtos);
 
     void removeOrder(String orderId);
 

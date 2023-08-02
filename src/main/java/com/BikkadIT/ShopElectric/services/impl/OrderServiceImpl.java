@@ -1,11 +1,11 @@
 package com.BikkadIT.ShopElectric.services.impl;
 
+import com.BikkadIT.ShopElectric.dtos.CreateOrderRequest;
 import com.BikkadIT.ShopElectric.dtos.OrderDtos;
 import com.BikkadIT.ShopElectric.dtos.PageableResponse;
 import com.BikkadIT.ShopElectric.dtos.UserDto;
-import com.BikkadIT.ShopElectric.entities.CreateOrderRequest;
-import com.BikkadIT.ShopElectric.entities.Order;
-import com.BikkadIT.ShopElectric.entities.User;
+import com.BikkadIT.ShopElectric.entities.*;
+import com.BikkadIT.ShopElectric.exceptions.BadApiRequestException;
 import com.BikkadIT.ShopElectric.exceptions.ResourceNotFoundException;
 import com.BikkadIT.ShopElectric.helper.AppConstants;
 import com.BikkadIT.ShopElectric.repository.CartRepository;
@@ -21,7 +21,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,10 +44,68 @@ public class OrderServiceImpl implements OrderServiceI {
     private ModelMapper mapper;
 
     private static Logger logger= LoggerFactory.getLogger(OrderServiceImpl.class);
-    @Override
-    public OrderDtos createOrder(OrderDtos orderDtos){
 
-        return null;
+    @Override
+    public OrderDtos createOrder(CreateOrderRequest orderDto) {
+        logger.info("Dao Request initialized to create order ");
+        String userId = orderDto.getUserId();
+        String cartId = orderDto.getCartId();
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.NOT_FOUND+userId));
+        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("cart not found"));
+
+        //fetch CartItems
+        List<CartItem> cartitems = cart.getItems();
+        logger.info("No. of cartItems: ",cartitems.size());
+        if(cartitems.size() <= 0){
+            throw new BadApiRequestException("Items invalid");
+        }
+
+        // Generate Order
+        Order order = Order.builder()
+                .orderId(UUID.randomUUID().toString())
+                .billingAddress(orderDto.getBillingAddress())
+                .billingName(orderDto.getBillingName())
+                .billingPhone(orderDto.getBillingPhone())
+                .orderDate(new Date())
+                .deliveryDate(null)
+                .paymentStatus(orderDto.getPaymentStatus())
+                .orderStatus(orderDto.getOrderStatus())
+                .user(user)
+                .build();
+
+        // Convert CartItems to OrderItems
+
+        AtomicReference<Integer> orderAmount=new  AtomicReference<Integer>(0);
+        List<OrderItem> orderItems = cartitems.stream().map(cartitem -> {
+
+            OrderItem orderItem = OrderItem.builder()
+                    .quantity(cartitem.getQuantity())
+                    .products(cartitem.getProducts())
+                    .totalPrice((int) (cartitem.getQuantity() * cartitem.getProducts().getDiscount()))
+                    .order(order)
+                    .build();
+            orderAmount.set(orderAmount.get()+orderItem.getTotalPrice());
+            orderItem.setCreatedBy(user.getCreatedBy());
+            orderItem.setModifiedDate(user.getModifiedDate());
+            orderItem.setIsActive(user.getIsActive());
+            return orderItem;
+        }).collect(Collectors.toList());
+
+        order.setOrderItems(orderItems);
+        order.setOrderAmount(orderAmount.get());
+        order.setCreatedBy(user.getCreatedBy());
+        order.setModifiedBy(user.getModifiedBy());
+        order.setIsActive(user.getIsActive());
+
+        // After converting into OrderItems, clear Cart & save it
+        cart.getItems().clear();
+        cartRepository.save(cart);
+
+        //save order
+        Order saveOrder = orderRepository.save(order);
+        logger.info("Dao Request completed to create order ");
+        return mapper.map(saveOrder,OrderDtos.class);
     }
     /*
      * @author: rohini
